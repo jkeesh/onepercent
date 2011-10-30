@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+     <script type="text/javascript" src="d3.min.js"></script>
+    <script type="text/javascript" src="jQuery.min.js"></script>
+    <script type="text/javascript" src="d3.geo.js"></script>
+    <script type="text/javascript" src="d3.geom.js"></script>
+    <link type="text/css" rel="stylesheet" href="choropleth.css"/>
+    <link type="text/css" rel="stylesheet" href="colorbrewer.css"/>
+<link href='http://fonts.googleapis.com/css?family=Copse' rel='stylesheet' type='text/css'>
+
+
+    <!-- <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script> -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="dragslider.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/themes/ui-lightness/jquery-ui.css" />
+
+
+
+<style type="text/css">
+body{
+	font-family: 'Copse', serif, Helvetica;
+}
+
+a{
+	color: #777;
+}
+
+svg {
+  background: #eee;
+  width: 960px;
+  height: 500px;
+  border: 1px solid black;
+}
+#sidebar{
+	float: right;
+	margin-right: 20px;
+}
+
+#info{
+	background: #ccc;
+	width: 300px;
+	height: 150px;
+	padding: 10px;
+	border-radius: 8px;
+	opacity: 0.8;
+	border: 3px solid black;
+}
+
+#map{
+	float: left;
+}
+
+#title{
+	font-size: 40px;
+	font-family: 'Copse', serif, Helvetica;
+}
+
+#author{
+	font-size: 20px;
+}
+
+.clear{
+	clear: both;
+}
+
+#slider{
+	margin: 20px 0;
+}
+
+#sliderrange{
+	margin-bottom: 20px;
+}
+
+#checkbox{
+	margin: 10px 0;
+}
+
+#name{
+	font-size: 20px;
+	font-weight: bold;
+}
+
+#median, #percent{
+	font-size: 18px;
+	padding: 4px;
+}
+
+#details{
+	margin-top: 10px;
+	font-size: 12px;
+}
+
+.stats{
+	margin-top: 15px;
+	font-style: italic;
+	font-size: 12px;
+}
+
+    </style>
+  </head>
+  <body>
+
+	
+	<div id="title">
+		Where is the 1%?
+		<span id="author">by jeremy keeshin</span>
+	</div>
+	
+	<div id="map">
+	</div>
+	
+	<div id="sidebar">
+		<div id="info">
+			<div id="name">
+				County Name:
+			</div>
+			<div id="median">
+				<span>Median Income: </span> <span id="median_income"></span>
+			</div>
+			<div id="percent">
+			
+			</div>
+			<div id="details">
+			</div>
+		</div>
+	
+		<div id="overview">
+			
+			<div id="slider" style=""></div>
+			
+			<div id="sliderrange">
+				<span id="min">0</span> - 
+				<span id="max">1</span> %
+			</div>
+			
+			
+			<div id="checkbox">
+				<input type="checkbox" name="highlight" value="highlight" checked />
+				Highlight percent (on/off)
+			</div>
+			
+			<div class="stats">
+				<div>
+					Total counties: 3193
+				</div>
+
+				<div>
+					Max: Loudon County VA, $114,200
+				</div>
+
+				<div>
+					Min: Buffalo County, SD $18,860
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="clear"></div>
+	
+	<div id="sources">
+		<div>
+			Median income data from <a href="http://www.census.gov/did/www/saipe/data/statecounty/data/2009.html
+			">http://www.census.gov/did/www/saipe/data/statecounty/data/2009.html
+			</a>
+		</div>
+		<div>
+			Choropleth design from <a href="http://mbostock.github.com/d3/ex/choropleth.html">http://mbostock.github.com/d3/ex/choropleth.html</a>. Using <a href="http://mbostock.github.com/d3/">d3</a>.
+		</div>
+		<div>
+			You can drag or zoom to explore the map.
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="income.js"></script>
+
+	<script type="text/javascript">
+		$(function(){
+			// Slider
+			$('#slider').dragslider({
+				animate: true,
+				range: true,
+				rangeDrag: true,
+				min: 0,
+				max: 100,
+				values: [0, 1],
+				slide: function(event, ui){
+					$('#min').html(ui.values[0]);
+					$('#max').html(ui.values[1]);
+					highlight(ui.values[0], ui.values[1]);
+					min_percent = ui.values[0];
+					max_percent = ui.values[1];
+				}       
+			});
+
+			$('input[type=checkbox]').change(function(){
+				checkbox = !checkbox;
+				update_colors();
+			});
+			
+			setTimeout(1000, function(){
+				$("#slider").trigger('slide');
+				
+			});
+		});
+
+	</script>
+  </body>
+</html>
